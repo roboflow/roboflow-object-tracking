@@ -25,7 +25,7 @@ def _run_in_batches(f, data_dict, out, batch_size):
         out[e:] = f(batch_data_dict)
 
 
-def extract_image_patch(image, bbox, patch_shape):
+def extract_image_patch(image, bbox, patch_shape=None):
     """Extract image patch from bounding box.
 
     Parameters
@@ -68,7 +68,7 @@ def extract_image_patch(image, bbox, patch_shape):
         return None
     sx, sy, ex, ey = bbox
     image = image[sy:ey, sx:ex]
-    image = cv2.resize(image, tuple(patch_shape[::-1]))
+    #image = cv2.resize(image, tuple(patch_shape[::-1]))
     return image
 
 
@@ -89,16 +89,15 @@ class ImageEncoder(object):
 
 def create_box_encoder(model, transform, batch_size=32):
     image_encoder = ImageEncoder(model, transform)
-    image_shape = image_encoder.image_shape
 
     def encoder(image, boxes):
         image_patches = []
         for box in boxes:
-            patch = extract_image_patch(image, box, image_shape[:2])
+            patch = extract_image_patch(image, box)
             if patch is None:
                 print("WARNING: Failed to extract image patch: %s." % str(box))
                 patch = np.random.uniform(
-                    0., 255., image_shape).astype(np.uint8)
+                    0., 255., patch.shape).astype(np.uint8)
             image_patches.append(patch)
         image_patches = np.asarray(image_patches)
         return image_encoder(image_patches, batch_size)
