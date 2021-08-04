@@ -31,7 +31,9 @@ def detect(save_img=False):
     
     # initialize deep sort
     model_filename = "ViT-B/32"
-    encoder = gdet.create_box_encoder(model_filename, batch_size=1)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    model, transform = clip.load(model_filename, device=device)
+    encoder = gdet.create_box_encoder(model, tranform, batch_size=1)
     # calculate cosine distance metric
     metric = nn_matching.NearestNeighborDistanceMetric("cosine", max_cosine_distance, nn_budget)
     # initialize tracker

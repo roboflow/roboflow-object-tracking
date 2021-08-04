@@ -5,7 +5,7 @@ import argparse
 import numpy as np
 import cv2
 import tensorflow.compat.v1 as tf
-import clip
+import torch
 
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 if len(physical_devices) > 0:
@@ -74,10 +74,10 @@ def extract_image_patch(image, bbox, patch_shape):
 
 class ImageEncoder(object):
 
-    def __init__(self, checkpoint_filename):
+    def __init__(self, model, transform):
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model, transform = clip.load(checkpoint_filename, device=device)
+        
         self.model = model
         self.transform = transform
 
@@ -88,8 +88,8 @@ class ImageEncoder(object):
         return out
 
 
-def create_box_encoder(model_filename, batch_size=32):
-    image_encoder = ImageEncoder(model_filename)
+def create_box_encoder(model, transform, batch_size=32):
+    image_encoder = ImageEncoder(model, transform)
     image_shape = image_encoder.image_shape
 
     def encoder(image, boxes):
