@@ -76,7 +76,6 @@ class ImageEncoder(object):
 
     def __init__(self, model, transform):
 
-        device = "cuda" if torch.cuda.is_available() else "cpu"
         
         self.model = model
         self.transform = transform
