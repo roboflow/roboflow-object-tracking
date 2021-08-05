@@ -125,7 +125,7 @@ def detect(save_img=False):
                 # Transform bboxes from tlbr to tlwh
                 trans_bboxes = det[:, :4].clone()
                 trans_bboxes[:, 2:] -= trans_bboxes[:, :2]
-                bboxes = trans_bboxes[:, :4].to
+                bboxes = trans_bboxes[:, :4].cpu()
                 confs = det[:, 4]
                 class_nums = det[:, -1]
 

@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 import tensorflow.compat.v1 as tf
 import torch
+from PIL import Image
 
 physical_devices = tf.config.experimental.list_physical_devices('GPU')
 if len(physical_devices) > 0:
@@ -81,9 +82,10 @@ class ImageEncoder(object):
         self.transform = transform
 
     def __call__(self, data_x, batch_size=32):
-        out = np.zeros((len(data_x), self.feature_dim), np.float32)
-        for patch in len(data_x):
-            out[patch] = self.model.encode_image(data_x[patch])
+        out = []
+        for patch in range(len(data_x)):
+            img = self.transform(Image.fromarray(data_x[patch])).unsqueeze(0).cuda()
+            out.append(self.model.encode_image(img).cpu())
         return out
 
 
