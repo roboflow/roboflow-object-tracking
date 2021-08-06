@@ -82,12 +82,12 @@ class ImageEncoder(object):
         self.transform = transform
 
     def __call__(self, data_x, batch_size=32):
-        out = np.array([])
+        out = np.empty([len(data_x), 512])
         for patch in range(len(data_x)):
             img = self.transform(Image.fromarray(data_x[patch])).unsqueeze(0).cuda()
-            features = self.model.encode_image(img).cpu()
-            features = features.transpose(0,1)
-            np.append(out, features)
+            features = self.model.encode_image(img).cpu().numpy()
+            out[patch] = features[0]
+        print(out.shape)
         return out
 
 
