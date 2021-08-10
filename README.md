@@ -1,14 +1,21 @@
 # yolov5-deepsort
 
-Object tracking using YOLOv5 and Deep SORT.
+Object tracking using Roboflow Inference API and CLIP Deep SORT.
 
 ## Getting Started
+
+Clone repositories
+ ```
+ git clone https://github.com/roboflow-ai/roboflow-object-tracking
+ cd roboflow-object-tracking
+ git clone https://github.com/openai/CLIP.git
+ cp -r /content/roboflow-object-tracking/CLIP/. /content/roboflow-object-tracking
+ ```
+ 
 
 Install requirements (python 3.7+)
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -16,7 +23,7 @@ pip install -r requirements.txt
 Run
 
 ```bash
-python object_tracker.py --source data/video/test.mp4
+python clip_object_tracker.py --source data/video/test.mp4
 ```
 
 (by default, output will be in runs/detect/exp[num])
@@ -24,7 +31,7 @@ python object_tracker.py --source data/video/test.mp4
 Help
 
 ```bash
-python object_tracker.py -h
+python clip_object_tracker.py -h
 ```
 
 ## Acknowledgements
