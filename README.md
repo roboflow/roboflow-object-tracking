@@ -1,17 +1,17 @@
-# yolov5-deepsort
+# roboflow-object-tracking
 
 Object tracking using Roboflow Inference API and CLIP Deep SORT.
 
 ## Getting Started
 
 Clone repositories
- ```
- git clone https://github.com/roboflow-ai/roboflow-object-tracking
- cd roboflow-object-tracking
- git clone https://github.com/openai/CLIP.git
- cp -r /content/roboflow-object-tracking/CLIP/. /content/roboflow-object-tracking
- ```
- 
+
+```
+git clone https://github.com/roboflow-ai/roboflow-object-tracking
+cd roboflow-object-tracking
+git clone https://github.com/openai/CLIP.git
+cp -r /content/roboflow-object-tracking/CLIP/. /content/roboflow-object-tracking
+```
 
 Install requirements (python 3.7+)
 
