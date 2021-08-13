@@ -84,7 +84,7 @@ class ImageEncoder(object):
     def __call__(self, data_x, batch_size=32):
         out = np.empty([len(data_x), 512])
         for patch in range(len(data_x)):
-            img = self.transform(Image.fromarray(data_x[patch])).unsqueeze(0).cuda()
+            img = self.transform(Image.fromarray(data_x[patch])).unsqueeze(0)
             features = self.model.encode_image(img).cpu().numpy()
             out[patch] = features[0]
         print(out.shape)
@@ -97,13 +97,14 @@ def create_box_encoder(model, transform, batch_size=32):
     def encoder(image, boxes):
         image_patches = []
         for box in boxes:
+            print("extracting box {} from image {}".format(box, image.shape))
             patch = extract_image_patch(image, box)
             if patch is None:
                 print("WARNING: Failed to extract image patch: %s." % str(box))
                 patch = np.random.uniform(
                     0., 255., patch.shape).astype(np.uint8)
             image_patches.append(patch)
-        image_patches = np.asarray(image_patches)
+        #image_patches = np.array(image_patches)
         return image_encoder(image_patches, batch_size)
 
     return encoder

@@ -91,22 +91,29 @@ def detect(save_img=False):
 
     frame_count = 0
     for path, img, im0s, vid_cap in dataset:
+        # Roboflow Inference
+        t1 = time_synchronized()
+        pred, classes = predict_image(vid_cap, opt.api_key, opt.url, frame_count)
+        pred = [torch.tensor(pred)]
+
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
 
-        # Roboflow Inference
-        pred = predict_image(img, opt.api_key, opt.url, frame_count)
+
+        '''
 
         # Inference
-        t1 = time_synchronized()
+        
         pred = model(img, augment=opt.augment)[0]
 
+        
         # Apply NMS
         pred = non_max_suppression(
             pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
+        print(pred)'''
         t2 = time_synchronized()
 
         # Apply Classifier
@@ -125,13 +132,13 @@ def detect(save_img=False):
             save_path = str(save_dir / p.name)  # img.jpg
             txt_path = str(save_dir / 'labels' / p.stem) + \
                 ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
-            s += '%gx%g ' % img.shape[2:]  # print string
+            #s += '%gx%g ' % img.shape[2:]  # print string
             # normalization gain whwh
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
             if len(det):
                 # Rescale boxes from img_size to im0 size
-                det[:, :4] = scale_coords(
-                    img.shape[2:], det[:, :4], im0.shape).round()
+                #det[:, :4] = scale_coords(
+                #    img.shape[2:], det[:, :4], im0.shape).round()
 
                 # Print results
                 for c in det[:, -1].unique():
@@ -139,8 +146,10 @@ def detect(save_img=False):
                     s += f'{n} {names[int(c)]}s, '  # add to string
 
                 # Transform bboxes from tlbr to tlwh
+
+                print(det[:, :4][0])
                 trans_bboxes = det[:, :4].clone()
-                trans_bboxes[:, 2:] -= trans_bboxes[:, :2]
+                #trans_bboxes[:, 2:] -= trans_bboxes[:, :2]
                 bboxes = trans_bboxes[:, :4].cpu()
                 confs = det[:, 4]
                 class_nums = det[:, -1]
@@ -148,7 +157,7 @@ def detect(save_img=False):
                 # encode yolo detections and feed to tracker
                 features = encoder(im0, bboxes)
                 detections = [Detection(bbox, conf, class_num, feature) for bbox, conf, class_num, feature in zip(
-                    bboxes, confs, class_nums, features)]
+                    bboxes, confs, classes, features)]
 
                 # run non-maxima supression
                 boxs = np.array([d.tlwh for d in detections])
@@ -167,7 +176,7 @@ def detect(save_img=False):
                     if not track.is_confirmed() or track.time_since_update > 1:
                         continue
                     xyxy = track.to_tlbr()
-                    class_num = int(track.class_num)
+                    class_num = track.class_num
 
                     if opt.info:
                         print("Tracker ID: {}, Class: {}, BBox Coords (xmin, ymin, xmax, ymax): {}".format(
@@ -183,9 +192,9 @@ def detect(save_img=False):
                             f.write(('%g ' * len(line)).rstrip() % line + '\n')
 
                     if save_img or view_img:  # Add bbox to image
-                        label = f'{names[class_num]} {track.track_id}'
+                        label = f'{class_num} {track.track_id}'
                         plot_one_box(xyxy, im0, label=label,
-                                     color=colors[class_num], line_thickness=3)
+                                     color=colors[len(class_num)], line_thickness=3)
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({t2 - t1:.3f}s)')
@@ -264,9 +273,9 @@ if __name__ == '__main__':
                         help='Gating threshold for cosine distance metric (object appearance).')
     parser.add_argument('--nn_budget', type=int, default=None,
                         help='Maximum size of the appearance descriptors allery. If None, no budget is enforced.')
-    parser.add_argument('--api_key', type=int, default=None,
+    parser.add_argument('--api_key', default=None,
                         help='Roboflow API Key.')
-    parser.add_argument('--url', type=int, default=None,
+    parser.add_argument('--url', default=None,
                         help='Roboflow Model URL.')
     parser.add_argument('--info', action='store_true',
                         help='Print debugging info.')

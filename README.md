@@ -9,8 +9,8 @@ Clone repositories
 ```
 git clone https://github.com/roboflow-ai/roboflow-object-tracking
 cd roboflow-object-tracking
-git clone https://github.com/openai/CLIP.git
-cp -r /content/roboflow-object-tracking/CLIP/. /content/roboflow-object-tracking
+git clone https://github.com/openai/CLIP.git CLIP-repo
+cp -r ./CLIP-repo/clip ./clip
 ```
 
 Install requirements (python 3.7+)
@@ -20,13 +20,26 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
+Install requirements (anaconda python 3.8)
+```
+conda install pytorch torchvision torchaudio -c pytorch
+conda install ftfy regex
+pip install opencv pycocotools tensorflow
+```
+
 Run
 
 ```bash
-python clip_object_tracker.py --source data/video/test.mp4
+python clip_object_tracker.py --source data/video/cards.mp4 --url https://detect.roboflow.com/playing-cards-ow27d/1 --api_key ROBOFLO_API_KEY
 ```
 
 (by default, output will be in runs/detect/exp[num])
+
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true" poster="path/to/poster_image.png">
+    <source src="data/demo/cards.mp4" type="video/mp4">
+  </video>
+</figure>
 
 Help
 
