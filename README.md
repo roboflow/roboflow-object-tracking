@@ -2,7 +2,7 @@
 
 Object tracking using Roboflow Inference API and zeroshot CLIP Deep SORT. [More on CLIP](https://blog.roboflow.com/how-to-use-openai-clip/)
 
-![Alt Text](https://i.imgur.com/pxO6pYx.gif)
+![Cards Example](https://github.com/roboflow-ai/roboflow-object-tracking/blob/main/cards.py)
 
 Example object tracking courtesy of the [Roboflow Universe public playing cards model and dataset](https://universe.roboflow.com/augmented-startups/playing-cards-ow27d). You can adapt this to your own dataset on Roboflow.
 
