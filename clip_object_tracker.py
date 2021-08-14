@@ -24,10 +24,11 @@ from deep_sort.detection import Detection
 from deep_sort.tracker import Tracker
 from tools import generate_clip_detections as gdet
 
-#def process_detections():
-
 
 def update_tracks(tracker, frame_count, save_txt, txt_path, save_img, view_img, colors, im0, gn):
+    if len(tracker.tracks):
+        print("[Tracks]")
+
     for track in tracker.tracks:
         if not track.is_confirmed() or track.time_since_update > 1:
             continue
@@ -79,7 +80,7 @@ def detect(save_img=False):
     model_filename = "ViT-B/32"
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, transform = clip.load(model_filename, device=device)
-    encoder = gdet.create_box_encoder(model, transform, batch_size=1)
+    encoder = gdet.create_box_encoder(model, transform, batch_size=1, device=device)
     # calculate cosine distance metric
     metric = nn_matching.NearestNeighborDistanceMetric(
         "cosine", max_cosine_distance, nn_budget)
@@ -117,6 +118,7 @@ def detect(save_img=False):
 
     frame_count = 0
     for path, img, im0s, vid_cap in dataset:
+
         # Roboflow Inference
         t1 = time_synchronized()
         pred, classes = predict_image(vid_cap, opt.api_key, opt.url, frame_count)
@@ -146,11 +148,15 @@ def detect(save_img=False):
             # normalization gain whwh
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]
             if len(det):
+
+                print("\n[Detections]")
                 # Print results
                 clss = np.array(classes)
                 for c in np.unique(clss):
                     n = (clss == c).sum()  # detections per class
                     s += f'{n} {c}, '  # add to string
+
+                print(s)
 
                 trans_bboxes = det[:, :4].clone()
                 bboxes = trans_bboxes[:, :4].cpu()
@@ -177,7 +183,7 @@ def detect(save_img=False):
                 update_tracks(tracker, frame_count, save_txt, txt_path, save_img, view_img, colors, im0, gn)
 
             # Print time (inference + NMS)
-            print(f'{s}Done. ({t2 - t1:.3f}s)')
+            print(f'Done. ({t2 - t1:.3f}s)')
 
             # Stream results
             if view_img:
