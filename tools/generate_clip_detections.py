@@ -89,7 +89,6 @@ class ImageEncoder(object):
             out.append(img)
 
         features = self.model.encode_image(torch.stack(out)).cpu().numpy()
-        print(features.shape)
         return features
 
 
