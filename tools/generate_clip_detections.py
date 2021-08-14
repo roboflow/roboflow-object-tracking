@@ -82,13 +82,15 @@ class ImageEncoder(object):
         self.transform = transform
 
     def __call__(self, data_x, batch_size=32):
-        out = np.empty([len(data_x), 512])
+        out = []
+
         for patch in range(len(data_x)):
-            img = self.transform(Image.fromarray(data_x[patch])).unsqueeze(0)
-            features = self.model.encode_image(img).cpu().numpy()
-            out[patch] = features[0]
-        print(out.shape)
-        return out
+            img = self.transform(Image.fromarray(data_x[patch]))
+            out.append(img)
+
+        features = self.model.encode_image(torch.stack(out)).cpu().numpy()
+        print(features.shape)
+        return features
 
 
 def create_box_encoder(model, transform, batch_size=32):
