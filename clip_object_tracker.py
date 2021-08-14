@@ -141,13 +141,13 @@ def detect(save_img=False):
                 #    img.shape[2:], det[:, :4], im0.shape).round()
 
                 # Print results
-                for c in det[:, -1].unique():
-                    n = (det[:, -1] == c).sum()  # detections per class
-                    s += f'{n} {names[int(c)]}s, '  # add to string
+                clss = np.array(classes)
+                for c in np.unique(clss):
+                    n = (clss == c).sum()  # detections per class
+                    s += f'{n} {c}, '  # add to string
 
                 # Transform bboxes from tlbr to tlwh
 
-                print(det[:, :4][0])
                 trans_bboxes = det[:, :4].clone()
                 #trans_bboxes[:, 2:] -= trans_bboxes[:, :2]
                 bboxes = trans_bboxes[:, :4].cpu()

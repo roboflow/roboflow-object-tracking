@@ -98,7 +98,7 @@ def create_box_encoder(model, transform, batch_size=32):
     def encoder(image, boxes):
         image_patches = []
         for box in boxes:
-            print("extracting box {} from image {}".format(box, image.shape))
+            #print("extracting box {} from image {}".format(box, image.shape))
             patch = extract_image_patch(image, box)
             if patch is None:
                 print("WARNING: Failed to extract image patch: %s." % str(box))
